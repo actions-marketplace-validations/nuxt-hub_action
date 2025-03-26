@@ -33,7 +33,7 @@
   "devDependencies": {
     "@actions/core": "^1.11.1",
     "@github/local-action": "^2.5.1",
-    "@nuxt/eslint-config": "^0.7.5",
+    "@nuxt/eslint-config": "^1.2.0",
     "@types/node": "^22.10.7",
     "eslint": "^9.18.0",
     "nuxthub": "^0.8.4",
