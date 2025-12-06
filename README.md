@@ -5,6 +5,11 @@
 
 Automatically deploy your Nuxt app to NuxtHub using GitHub Actions ☁️🚀
 
+> [!NOTE]
+> #### Migrating from v1 to v2
+> Environment variables and secrets set within NuxtHub Admin are now applied during build time. <br>
+> Learn more and view the breaking changes on our [documentation](https://hub.nuxt.com/changelog/environments).
+
 ## 📃 Example workflow
 
 ```yaml
@@ -26,22 +31,19 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build site
-        run: pnpm run build
-
-      - name: Deploy to NuxtHub
-        uses: nuxt-hub/action@v1
+      - name: Build & Deploy to NuxtHub
+        uses: nuxt-hub/action@v2
 ```
 
 ## ⚙️ Inputs
@@ -49,10 +51,13 @@ jobs:
 The following input parameters can be provided to the GitHub Action. Learn more about [workflow syntax for GitHub Actions](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idstepswith) on GitHub's documentation.
 
 - **`directory`**
-  The directory of the built Nuxt application. Defaults to `dist`.
+  The directory of the Nuxt application to build. Defaults to ``.
+
+- **`output-directory`**
+  The output directory containing the built Nuxt application to deploy, relative to the directory specified in `directory`. Defaults to `dist`.
 
 - **`project-key`**
-  The project key of the NuxtHub project to deploy to. If the repository is linked to more than one project, project key is required.
+  The project key of the NuxtHub project to deploy to.
 
 ## 🧾 Outputs
 
@@ -69,11 +74,17 @@ This action provides the following outputs that you can use in subsequent workfl
   - https://abcdefg.example.pages.dev (feat/example)
 
 - **`branch-url`**
-  The permanent URL for the current branch deployment.
+  The permanent URL for the current branch deployment. Only available on Pages projects.
 
   Examples:
   - https://example.nuxt.dev (main)
-  - https://feat-example.example.pages.dev (feat/example)
+  - https://feat.example.pages.dev (feat/example)
+
+- **`environment-url`**
+  The permanent URL of the environment.
+
+  Examples:
+  - https://hello-world-staging.example.workers.dev ('staging' environment)
 
 ## 💚 Contributing
 
@@ -88,43 +99,14 @@ pnpm run bundle
 ### Development
 
 1. Update `src/`
-1. Format, test, and build the action
+2. Format, lint, and build the action
 
    ```bash
    pnpm run bundle
    ```
 
-   > It will run [`unbuild`](https://github.com/unjs/unbuild)
+   > It will run [`tsdown`](https://tsdown.dev/)
    > to build the final JavaScript action code with all dependencies included.
-
-1. (Optional) Test the action locally
-
-   The [`@github/local-action`](https://github.com/github/local-action) utility
-   can be used to test your action locally. It is a simple command-line tool
-   that "stubs" (or simulates) the GitHub Actions Toolkit. This way, you can run
-   your TypeScript action locally without having to commit and push your changes
-   to a repository.
-
-   The `local-action` utility can be run in the following ways:
-
-   - Visual Studio Code Debugger
-
-     Make sure to review and, if needed, update
-     [`.vscode/launch.json`](./.vscode/launch.json)
-
-   - Terminal/Command Prompt
-
-     ```bash
-     # pnpm local-action <action-yaml-path> <entrypoint> <dotenv-file>
-     pnpm local-action . src/main.ts .env
-     ```
-
-   You can provide a `.env` file to the `local-action` CLI to set environment
-   variables used by the GitHub Actions Toolkit. For example, setting inputs and
-   event payload data used by your action. For more information, see the example
-   file, [`.env.example`](./.env.example), and the
-   [GitHub Actions Documentation](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables).
-
 
 ### Publishing a New Release
 
